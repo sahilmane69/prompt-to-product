@@ -32,4 +32,6 @@ test("writes linked prompt and result events", () => {
   assert.equal(events.length, 2);
   assert.equal(events[0].prompt, "Build a hero section");
   assert.equal(events[1].interaction_id, interactionId);
+  assert.match(fs.readFileSync(logFile, "utf8"), /PROMPT TO PRODUCT — WORKSHOP JOURNAL/);
+  assert.match(fs.readFileSync(logFile, "utf8"), /Type: PROMPT/);
 });
