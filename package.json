@@ -2,7 +2,7 @@
   "name": "prompt-to-product-agent-logger",
   "version": "1.0.0",
   "private": true,
-  "description": "A reusable agent runner that logs prompts and detects the AI coding agent used during the Prompt to Product series.",
+  "description": "Official workspace for the Prompt to Product workshop series.",
   "bin": {
     "ptp": "src/cli.js"
   },
