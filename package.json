@@ -1,17 +1,11 @@
 {
-  "name": "prompt-to-product-agent-logger",
+  "name": "prompt-to-product",
   "version": "1.0.0",
   "private": true,
   "description": "Official workspace for the Prompt to Product workshop series.",
-  "bin": {
-    "ptp": "src/cli.js"
-  },
   "scripts": {
-    "start": "node src/cli.js",
-    "ask": "node src/cli.js ask",
-    "log": "node src/cli.js log",
-    "report": "node src/cli.js report",
-    "test": "node --test"
+    "build": "node workshop.js",
+    "report": "node workshop.js --report"
   },
   "engines": {
     "node": ">=18"
