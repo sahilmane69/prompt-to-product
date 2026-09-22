@@ -1,31 +1,37 @@
 # Prompt to Product
 
-An AI-powered project-building series with automatic prompt logging and coding-agent detection.
+Welcome to **Prompt to Product**, an AI-powered project-building workshop series by Alta Tech Club.
 
-Students use one common runner to work with Claude Code, Codex, Gemini CLI, FreeBuff, Aider, or OpenCode. Every prompt is appended to `log.txt` with the selected agent, project, session, timestamp, and interaction ID. Completed CLI runs also record duration and exit status.
+This repository is your workspace for learning how to turn an idea into a working product with modern AI coding tools. Each session focuses on building something practical from scratch.
 
-## Why the runner is required
+## Series projects
 
-There is no universal operating-system API that can read prompts typed inside every AI editor or website. This repository solves that reliably by routing supported coding agents through one command. Claude Code additionally has a repository hook for automatic prompt capture.
+### Session 01 — Personal Portfolio
 
-## Structure
+Build and customize a responsive portfolio website that presents your skills, projects, experience, and contact information.
+
+### Session 02 — E-commerce Website
+
+Build a modern shopping experience with product listings, search, cart interactions, and a responsive interface.
+
+## What you will learn
+
+- Converting an idea into clear requirements
+- Writing effective prompts for development tasks
+- Building features step by step with an AI coding agent
+- Reading and improving generated code
+- Testing, debugging, and refining a project
+- Using Git and GitHub to manage your work
+- Deploying a finished project
+
+## Repository structure
 
 ```text
-.
-├── .claude/settings.json       # Claude Code prompt hook
-├── hooks/                      # Native agent integrations
-├── projects/
-│   ├── portfolio/              # Session 01 project
-│   └── ecommerce/              # Session 02 project
-├── src/
-│   ├── agents.js               # Agent adapters and detection
-│   ├── cli.js                  # Common runner
-│   ├── logger.js               # Append-only JSONL logging
-│   ├── redact.js               # Secret protection
-│   └── report.js               # Usage summary
-├── test/
-├── AGENTS.md                   # Instructions for coding agents
-└── log.txt                     # Prompt and run events
+projects/
+├── portfolio/       # Session 01 project
+└── ecommerce/       # Session 02 project
+
+log.txt              # Your readable workshop journal
 ```
 
 ## Setup
@@ -38,92 +44,60 @@ npm link
 cp .env.example .env
 ```
 
-No npm dependencies are required.
+## Start building
 
-## Use
-
-Run a prompt with an installed agent:
+Choose the agent available on your system and run your task:
 
 ```bash
 ptp ask --agent gemini --project portfolio --session session-01 --prompt "Build a responsive portfolio hero section"
 ```
 
+Other supported options include `claude`, `codex`, `freebuff`, `aider`, and `opencode`.
+
+If you only want to add an idea to your workshop journal:
+
 ```bash
-ptp ask --agent claude --project ecommerce --session session-02 --prompt "Create a responsive product grid"
+ptp log --agent gemini --project portfolio --session session-01 --prompt "Add a projects section"
 ```
 
-Detect an installed agent automatically:
+## Workshop journal
+
+Your prompts and project progress are organized inside `log.txt` in a clean format:
+
+```text
+========================================================================
+PROMPT TO PRODUCT — WORKSHOP JOURNAL
+Type: PROMPT
+ID: 2f6a...
+Time: 2026-09-22T12:00:00.000Z
+Project: portfolio
+Session: session-01
+Student: anonymous
+Agent: gemini
+Detected via: explicit
+
+Prompt:
+Build a responsive portfolio hero section
+========================================================================
+```
+
+Never include passwords, API keys, tokens, or personal information in a prompt.
+
+## Useful commands
 
 ```bash
 ptp detect
-```
-
-Record a prompt without launching an agent:
-
-```bash
-ptp log --agent codex --project portfolio --prompt "Add a projects section"
-```
-
-Preview the command without executing it:
-
-```bash
-ptp ask --agent gemini --prompt "Create a navbar" --dry-run
-```
-
-View usage totals:
-
-```bash
 ptp report
-```
-
-## Log format
-
-`log.txt` is newline-delimited JSON. Each interaction has a shared `interaction_id`.
-
-```json
-{"schema_version":1,"timestamp":"2026-09-22T12:00:00.000Z","event":"prompt","interaction_id":"...","project":"portfolio","session":"session-01","student_id":"anonymous","agent":"gemini","agent_detection":"explicit","prompt":"Build a responsive portfolio"}
-{"schema_version":1,"timestamp":"2026-09-22T12:00:08.000Z","event":"result","interaction_id":"...","project":"portfolio","session":"session-01","agent":"gemini","status":"completed","exit_code":0,"duration_ms":8000}
-```
-
-API keys, tokens, passwords, and common secrets are redacted before writing. Model responses are not stored by default.
-
-## Supported agents
-
-| Agent | Command used |
-| --- | --- |
-| Claude Code | `claude -p` |
-| Codex | `codex exec` |
-| Gemini CLI | `gemini -p` |
-| FreeBuff | `freebuff` |
-| Aider | `aider --message` |
-| OpenCode | `opencode run` |
-
-Adapters can be changed in `src/agents.js` if a CLI syntax changes.
-
-## Verify
-
-```bash
 npm test
-node src/cli.js ask --agent gemini --prompt "Test prompt" --dry-run
-node src/cli.js report
 ```
 
-## GitHub
+## Workshop workflow
 
-Create an empty repository, then run:
+1. Understand the feature you want to build.
+2. Write a clear and specific prompt.
+3. Generate the first version.
+4. Read and test the result.
+5. Improve the prompt and iterate.
+6. Commit each meaningful milestone to GitHub.
 
-```bash
-git init
-git add .
-git commit -m "feat: initialize Prompt to Product agent logger"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/prompt-to-product.git
-git push -u origin main
-```
-
-## Privacy
-
-- Tell participants that prompts are logged before the workshop begins.
-- Never include credentials or personal data in prompts.
-- Keep the repository private if student identifiers are enabled.
-- Set `PTP_STUDENT_ID=anonymous` unless identification is genuinely required.
+Build thoughtfully. Understand your code. Ship a product you can explain.
