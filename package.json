@@ -5,6 +5,7 @@
   "description": "Official workspace for the Prompt to Product workshop series.",
   "scripts": {
     "build": "node workshop.js",
+    "log": "node workshop.js --log",
     "report": "node workshop.js --report"
   },
   "engines": {

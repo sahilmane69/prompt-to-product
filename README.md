@@ -32,10 +32,25 @@ You can also set the `PTP_USER` environment variable in your terminal (`export P
 
 ## AI Agent Control (`AGENTS.md`)
 
-Workshop constraints and coding standards are defined in [`AGENTS.md`](file:///Users/sahilmane/Documents/GitHub/prompt-to-product/AGENTS.md). All supported AI agents (Claude, Gemini, Cursor, Codex, etc.) automatically follow these rules:
-- Code generation stays strictly isolated within `project/`.
-- Workshop runner scripts and logs remain protected.
-- Generated code must follow high quality, responsive design, and educational commenting standards.
+Workshop constraints and coding standards are defined in [`AGENTS.md`](file:///Users/sahilmane/Documents/GitHub/prompt-to-product/AGENTS.md). All supported AI agents (Claude, Gemini, Cursor, Codex, Windsurf, Antigravity, etc.) automatically follow these rules:
+- **Automatic Prompt Logging**: When participants chat directly with an AI in their editor instead of running `npm run build`, the AI is strictly instructed to run `npm run log -- "<prompt>"` before editing files so `log.txt` remains complete.
+- **Project Sandbox**: Code generation stays strictly isolated within `project/`.
+- **Protected Environment**: Workshop runner scripts and logs remain protected.
+- **Code Standards**: Generated code must follow high quality, responsive design, and educational commenting standards.
+
+## Direct Prompt Logging
+
+If you or your AI assistant want to record a prompt directly without running a subagent:
+
+```bash
+npm run log -- "Add dark mode toggle"
+```
+
+To record completion:
+
+```bash
+npm run log -- --result --id=<id> --status=completed
+```
 
 ## Continue building
 

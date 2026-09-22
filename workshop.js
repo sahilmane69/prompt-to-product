@@ -126,9 +126,21 @@ function report() {
   }
 }
 
+function getAgentForLog(requestedAgent) {
+  if (requestedAgent && requestedAgent.trim()) return requestedAgent.trim();
+  const detected = Object.keys(agents).find((name) => installed(agents[name][0]));
+  if (detected) return detected;
+  return process.env.PTP_AGENT || "assistant";
+}
+
 function parseWorkshopArgs(argv) {
   let dryRun = false;
   let report = false;
+  let log = false;
+  let result = false;
+  let id = null;
+  let status = null;
+  let duration = 0;
   let requestedAgent = process.env.PTP_AGENT || null;
   let explicitUser = null;
   const promptParts = [];
@@ -139,6 +151,22 @@ function parseWorkshopArgs(argv) {
       report = true;
     } else if (arg === "--dry-run") {
       dryRun = true;
+    } else if (arg === "--log" || arg === "--log-only") {
+      log = true;
+    } else if (arg === "--result") {
+      result = true;
+    } else if (arg.startsWith("--id=")) {
+      id = arg.slice("--id=".length);
+    } else if (arg === "--id" && i + 1 < argv.length) {
+      id = argv[++i];
+    } else if (arg.startsWith("--status=")) {
+      status = arg.slice("--status=".length);
+    } else if (arg === "--status" && i + 1 < argv.length) {
+      status = argv[++i];
+    } else if (arg.startsWith("--duration=")) {
+      duration = Number(arg.slice("--duration=".length)) || 0;
+    } else if (arg === "--duration" && i + 1 < argv.length) {
+      duration = Number(argv[++i]) || 0;
     } else if (arg.startsWith("--agent=")) {
       requestedAgent = arg.slice("--agent=".length);
     } else if (arg === "--agent" && i + 1 < argv.length) {
@@ -163,6 +191,11 @@ function parseWorkshopArgs(argv) {
   return {
     dryRun,
     report,
+    log,
+    result,
+    id,
+    status,
+    duration,
     requestedAgent,
     user: resolveUser(explicitUser),
     prompt: promptParts.join(" ").trim()
@@ -173,7 +206,28 @@ function main() {
   const args = parseWorkshopArgs(process.argv.slice(2));
   if (args.report) return report();
 
-  const { dryRun, requestedAgent, user, prompt } = args;
+  const { dryRun, log, result, id: specifiedId, status: specifiedStatus, duration, requestedAgent, user, prompt } = args;
+
+  // Handle direct logging by AI agents (without spawning a subagent process)
+  if (log) {
+    if (result) {
+      const interactionId = specifiedId || "manual";
+      const status = specifiedStatus || "completed";
+      logResult(interactionId, user, status, duration * 1000);
+      console.log(`Result logged to log.txt [ID: ${interactionId}, Status: ${status}] for ${user}.`);
+      return;
+    }
+
+    if (!prompt) throw new Error('Add a prompt to log: npm run log -- "Your prompt here"');
+    const interactionId = specifiedId || crypto.randomUUID().slice(0, 8);
+    const agent = getAgentForLog(requestedAgent);
+    logPrompt(interactionId, user, agent, prompt);
+    if (specifiedStatus) {
+      logResult(interactionId, user, specifiedStatus, duration * 1000);
+    }
+    console.log(`Prompt logged to log.txt [ID: ${interactionId}] for ${user} (Agent: ${agent}).`);
+    return;
+  }
 
   if (!prompt) throw new Error('Add a prompt: npm run build -- "Build my portfolio"');
 
@@ -182,7 +236,7 @@ function main() {
 
   fs.mkdirSync(projectDir, { recursive: true });
   syncAgentInstructions();
-  const id = crypto.randomUUID().slice(0, 8);
+  const id = specifiedId || crypto.randomUUID().slice(0, 8);
   logPrompt(id, user, agent, prompt);
   console.log(`Using ${agent} for ${user}. Prompt saved to log.txt.`);
 
@@ -193,14 +247,14 @@ function main() {
   }
 
   const started = Date.now();
-  const result = spawnSync(command, [...baseArgs, prompt], {
+  const runner = spawnSync(command, [...baseArgs, prompt], {
     cwd: projectDir,
     stdio: "inherit",
     shell: false
   });
-  const status = result.status === 0 ? "completed" : "failed";
-  logResult(id, user, status, Date.now() - started);
-  process.exitCode = result.status ?? 1;
+  const buildStatus = runner.status === 0 ? "completed" : "failed";
+  logResult(id, user, buildStatus, Date.now() - started);
+  process.exitCode = runner.status ?? 1;
 }
 
 try {
